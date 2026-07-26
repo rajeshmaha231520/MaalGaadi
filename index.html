@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TruckSetu — ఖాళీ లారీకి ఎప్పుడూ పని</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Mukta:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-cream:#F7EFDD;
+    --bg-card:#FFFDF6;
+    --ink:#20291F;
+    --navy:#1B3A4B;
+    --navy-deep:#122530;
+    --teal:#2F6E5F;
+    --mustard:#E8A33D;
+    --mustard-deep:#C97F1D;
+    --vermilion:#C1442D;
+    --line:#D8CDA9;
+    --shadow: 0 8px 24px rgba(27,58,75,0.10);
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg-cream);
+    color:var(--ink);
+    font-family:'Mukta', sans-serif;
+    font-size:16px;
+    line-height:1.5;
+  }
+  h1,h2,h3, .display{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    margin:0;
+    color:var(--navy-deep);
+  }
+  .mono{ font-family:'JetBrains Mono', monospace; letter-spacing:0.01em; }
+  a{color:inherit;}
+  button{font-family:inherit;}
+  img,svg{display:block;}
+
+  /* ---------- decorative truck-art border ---------- */
+  .art-border{
+    position:relative;
+  }
+  .art-border::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-9px; height:9px;
+    background-image:
+      repeating-linear-gradient(135deg, var(--mustard) 0 6px, transparent 6px 12px),
+      repeating-linear-gradient(45deg, var(--vermilion) 0 6px, transparent 6px 12px);
+    background-position: 0 0, 0 100%;
+    background-size: 100% 5px, 100% 5px;
+    background-repeat: repeat-x;
+    opacity:0.9;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    background:linear-gradient(180deg, var(--navy) 0%, var(--navy-deep) 100%);
+    color:#FBF3E0;
+    padding: 18px 6vw;
+    position:sticky; top:0; z-index:50;
+    box-shadow: var(--shadow);
+  }
+  .header-row{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    max-width:1180px; margin:0 auto;
+  }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:38px; height:38px; border-radius:10px;
+    background:var(--mustard);
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+  }
+  .brand-text .display{ font-size:1.3rem; color:#FBF3E0; line-height:1; }
+  .brand-text .sub{ font-size:0.72rem; color:#C9D6D2; letter-spacing:0.03em; }
+  nav{ display:flex; gap:6px; flex-wrap:wrap; }
+  nav button{
+    background:transparent; border:1px solid transparent; color:#E7E0C9;
+    padding:8px 14px; border-radius:999px; cursor:pointer; font-size:0.92rem; font-weight:600;
+    transition: all .15s ease;
+  }
+  nav button:hover{ background:rgba(255,255,255,0.08); }
+  nav button.active{ background:var(--mustard); color:var(--navy-deep); border-color:var(--mustard); }
+
+  main{ max-width:1180px; margin:0 auto; padding: 0 6vw 80px; }
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  /* ---------- hero ---------- */
+  .hero{
+    background:linear-gradient(160deg, var(--navy) 0%, var(--navy-deep) 78%);
+    color:#FBF3E0;
+    margin: 0 -6vw;
+    padding: 64px 6vw 90px;
+    position:relative;
+    overflow:hidden;
+  }
+  .hero-inner{ max-width:1180px; margin:0 auto; display:grid; grid-template-columns: 1.15fr 0.85fr; gap:40px; align-items:center; }
+  .eyebrow{
+    display:inline-block; font-family:'JetBrains Mono',monospace; font-size:0.78rem;
+    color:var(--mustard); background:rgba(232,163,61,0.14); border:1px solid rgba(232,163,61,0.4);
+    padding:4px 10px; border-radius:999px; margin-bottom:16px;
+  }
+  .hero h1{ font-size:clamp(2rem, 4vw, 3.1rem); color:#FBF3E0; line-height:1.08; }
+  .hero .telugu-line{ color:var(--mustard); font-size:clamp(1.3rem,2.6vw,1.9rem); margin-top:10px; }
+  .hero p.lede{ color:#CBD8D2; font-size:1.08rem; max-width:46ch; margin-top:18px; }
+  .hero-ctas{ display:flex; gap:12px; margin-top:28px; flex-wrap:wrap; }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; padding:13px 22px; border-radius:10px;
+    font-weight:700; font-size:0.98rem; cursor:pointer; border:2px solid transparent;
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:active{ transform:translateY(1px); }
+  .btn-primary{ background:var(--mustard); color:var(--navy-deep); }
+  .btn-primary:hover{ box-shadow:0 6px 18px rgba(232,163,61,0.35); }
+  .btn-outline{ background:transparent; color:#FBF3E0; border-color:rgba(251,243,224,0.4); }
+  .btn-outline:hover{ border-color:#FBF3E0; }
+  .btn-vermilion{ background:var(--vermilion); color:#FBF3E0; }
+  .btn-vermilion:hover{ box-shadow:0 6px 18px rgba(193,68,45,0.4); }
+
+  /* route ribbon signature element */
+  .route-ribbon{ position:relative; height:230px; }
+  .route-ribbon svg{ width:100%; height:100%; }
+  .route-dot-label{ font-family:'JetBrains Mono',monospace; font-size:0.72rem; fill:#CBD8D2; }
+  .route-town{ font-family:'Baloo 2',sans-serif; font-weight:700; font-size:0.95rem; fill:#FBF3E0; }
+  .truck-marker{ animation: drive 6s linear infinite; }
+  @keyframes drive{
+    0%{ offset-distance: 0%; }
+    100%{ offset-distance: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce){ .truck-marker{ animation:none; offset-distance:35%; } }
+
+  /* ---------- sections ---------- */
+  section{ padding: 56px 0; }
+  .section-head{ margin-bottom: 28px; }
+  .section-head .eyebrow-dark{
+    font-family:'JetBrains Mono',monospace; font-size:0.76rem; color:var(--teal);
+    text-transform:uppercase; letter-spacing:0.06em;
+  }
+  .section-head h2{ font-size:1.9rem; margin-top:6px; }
+  .section-head p{ color:#4B564D; max-width:60ch; margin-top:8px; }
+
+  /* trust strip */
+  .trust-strip{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:8px;
+  }
+  .trust-item{
+    background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px; text-align:center;
+  }
+  .trust-item .ic{ font-size:1.5rem; }
+  .trust-item .lbl{ font-weight:700; margin-top:6px; font-size:0.92rem; color:var(--navy-deep); }
+
+  /* cards grid for listings */
+  .filters{
+    display:flex; gap:10px; flex-wrap:wrap; align-items:end; margin-bottom:22px;
+    background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius); padding:16px;
+  }
+  .field{ display:flex; flex-direction:column; gap:5px; }
+  .field label{ font-size:0.78rem; font-weight:700; color:var(--teal); }
+  select, input, textarea{
+    font-family:'Mukta',sans-serif; font-size:0.95rem; padding:10px 12px;
+    border:1.5px solid var(--line); border-radius:8px; background:#fff; color:var(--ink);
+    min-width:160px;
+  }
+  select:focus, input:focus, textarea:focus{ outline:3px solid rgba(47,110,95,0.25); border-color:var(--teal); }
+  .listing-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:16px; }
+  .card{
+    background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px; box-shadow:var(--shadow); position:relative;
+  }
+  .card .route{ display:flex; align-items:center; gap:8px; font-family:'Baloo 2',sans-serif; font-weight:700; color:var(--navy-deep); font-size:1.08rem; }
+  .card .route .arrow{ color:var(--mustard-deep); }
+  .card .meta{ display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+  .tag{
+    font-size:0.74rem; font-weight:600; padding:4px 9px; border-radius:999px;
+    background:rgba(47,110,95,0.12); color:var(--teal); font-family:'JetBrains Mono',monospace;
+  }
+  .tag.warn{ background:rgba(193,68,45,0.12); color:var(--vermilion); }
+  .card .price{ margin-top:12px; font-family:'JetBrains Mono',monospace; font-weight:600; color:var(--navy-deep); }
+  .card .owner{ margin-top:10px; font-size:0.85rem; color:#556; display:flex; align-items:center; gap:6px; }
+  .verified{ color:var(--teal); font-weight:700; }
+  .card-actions{ margin-top:14px; display:flex; gap:8px; }
+  .btn-sm{ padding:8px 14px; font-size:0.85rem; border-radius:8px; }
+  .btn-teal{ background:var(--teal); color:#fff; }
+  .btn-ghost{ background:transparent; border:1.5px solid var(--line); color:var(--navy-deep); }
+  .contact-reveal{
+    margin-top:10px; font-family:'JetBrains Mono',monospace; font-size:0.88rem;
+    background:#EFF6F1; border:1px dashed var(--teal); border-radius:8px; padding:8px 10px; display:none;
+  }
+  .contact-reveal.show{ display:block; }
+
+  /* how it works */
+  .steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+  .step{ background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius); padding:20px; }
+  .step .num{ font-family:'JetBrains Mono',monospace; color:var(--mustard-deep); font-weight:700; font-size:0.85rem; }
+  .step h3{ font-size:1.1rem; margin-top:8px; }
+  .step p{ margin-top:6px; color:#4B564D; font-size:0.92rem; }
+
+  /* forms */
+  .form-wrap{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:28px; align-items:start; }
+  form.panel{
+    background:var(--bg-card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px; box-shadow:var(--shadow);
+  }
+  .form-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px; }
+  .form-grid .full{ grid-column:1 / -1; }
+  .field label.req::after{ content:" *"; color:var(--vermilion); }
+  .helper-panel{
+    background:var(--navy); color:#EAE2C4; border-radius:var(--radius); padding:24px;
+  }
+  .helper-panel h3{ color:#FBF3E0; font-size:1.05rem; }
+  .helper-panel ul{ margin:14px 0 0; padding-left:18px; color:#C9D6D2; font-size:0.92rem; line-height:1.7; }
+  .toast{
+    display:none; margin-top:16px; padding:12px 14px; border-radius:10px;
+    background:rgba(47,110,95,0.14); border:1px solid var(--teal); color:var(--navy-deep); font-weight:600;
+  }
+  .toast.show{ display:block; animation: fadein .3s ease; }
+  @keyframes fadein{ from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:translateY(0);} }
+
+  footer{
+    background:var(--navy-deep); color:#B9C4BE; padding:40px 6vw; margin-top:40px;
+  }
+  footer .foot-inner{ max-width:1180px; margin:0 auto; display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+  footer .display{ color:#FBF3E0; font-size:1.1rem; }
+  footer small{ font-size:0.8rem; }
+
+  @media (max-width:880px){
+    .hero-inner{ grid-template-columns:1fr; }
+    .route-ribbon{ height:170px; }
+    .form-wrap{ grid-template-columns:1fr; }
+    .form-grid{ grid-template-columns:1fr; }
+    .trust-strip{ grid-template-columns:repeat(2,1fr); }
+    .steps{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-row">
+    <div class="brand">
+      <div class="brand-mark">🚚</div>
+      <div class="brand-text">
+        <div class="display">TruckSetu</div>
+        <div class="sub">ఖాళీ లారీకి ఎప్పుడూ పని &nbsp;·&nbsp; no truck runs empty</div>
+      </div>
+    </div>
+    <nav id="mainNav">
+      <button data-view="home" class="active">Home</button>
+      <button data-view="find">Find a Truck</button>
+      <button data-view="postload">Send Goods</button>
+      <button data-view="posttruck">I Have a Truck</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <!-- ================= HOME ================= -->
+  <div class="view active" id="view-home">
+    <section class="hero" style="margin-top:0;">
+      <div class="hero-inner">
+        <div>
+          <span class="eyebrow">VIZAG · ANAKAPALLI · VIJAYAWADA · GUNTUR CORRIDOR</span>
+          <h1>Don't let your lorry<br>drive back empty.</h1>
+          <div class="telugu-line">మీ లారీ ఖాళీగా వెళ్లొద్దు</div>
+          <p class="lede">TruckSetu connects trucks finishing a delivery with people nearby who need something moved — so an Anakapalli-to-Vizag rice run doesn't come back with nothing on board.</p>
+          <div class="hero-ctas">
+            <button class="btn btn-primary" onclick="showView('find')">Find a Truck →</button>
+            <button class="btn btn-outline" onclick="showView('posttruck')">I have an empty truck</button>
+          </div>
+        </div>
+        <div class="route-ribbon" aria-hidden="true">
+          <svg viewBox="0 0 380 230">
+            <defs>
+              <path id="routePath" d="M 30 190 C 90 120, 110 100, 150 90 S 240 40, 300 30" />
+            </defs>
+            <path d="M 30 190 C 90 120, 110 100, 150 90 S 240 40, 300 30" fill="none" stroke="#3E5C63" stroke-width="2.5" stroke-dasharray="1 10" stroke-linecap="round"/>
+            <circle cx="30" cy="190" r="5" fill="#E8A33D"/>
+            <text x="42" y="196" class="route-town">Anakapalli</text>
+            <circle cx="150" cy="90" r="5" fill="#E8A33D"/>
+            <text x="162" y="96" class="route-town">Vizag</text>
+            <circle cx="300" cy="30" r="5" fill="#E8A33D"/>
+            <text x="234" y="20" class="route-town">Kakinada</text>
+            <text x="0" y="215" class="route-dot-label">rice · seafood · cement · steel</text>
+            <g class="truck-marker" style="offset-path:path('M 30 190 C 90 120, 110 100, 150 90 S 240 40, 300 30');">
+              <text font-size="20">🚛</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="eyebrow-dark">WHY PEOPLE TRUST TRUCKSETU</div>
+        <h2>Built for local trucking, not just an app.</h2>
+      </div>
+      <div class="trust-strip">
+        <div class="trust-item"><div class="ic">📞</div><div class="lbl">Phone-verified owners</div></div>
+        <div class="trust-item"><div class="ic">🤝</div><div class="lbl">Local brokers welcome</div></div>
+        <div class="trust-item"><div class="ic">₹</div><div class="lbl">Transparent route pricing</div></div>
+        <div class="trust-item"><div class="ic">🗣️</div><div class="lbl">తెలుగు support</div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="eyebrow-dark">LIVE ON THE CORRIDOR RIGHT NOW</div>
+        <h2>Trucks and loads near you, today</h2>
+        <p>A sample of what's currently posted on the Vizag–Anakapalli–Vijayawada–Guntur belt. Real listings will look just like this.</p>
+      </div>
+      <div class="listing-grid" id="homeFeed"></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <div class="eyebrow-dark">HOW IT WORKS</div>
+        <h2>Three steps, no middleman calls needed</h2>
+      </div>
+      <div class="steps">
+        <div class="step art-border">
+          <div class="num">STEP 1</div>
+          <h3>Post or search</h3>
+          <p>A truck owner posts an empty return trip. A shipper posts what they need moved. Takes under a minute.</p>
+        </div>
+        <div class="step art-border">
+          <div class="num">STEP 2</div>
+          <h3>Match &amp; confirm</h3>
+          <p>See a matching truck or load on your route instantly, with an estimated fair price. Confirm by phone or in-app.</p>
+        </div>
+        <div class="step art-border">
+          <div class="num">STEP 3</div>
+          <h3>Move &amp; rate</h3>
+          <p>Goods move, truck doesn't run empty, both sides rate each other so trust builds on the corridor over time.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= FIND A TRUCK ================= -->
+  <div class="view" id="view-find">
+    <section style="padding-top:40px;">
+      <div class="section-head">
+        <div class="eyebrow-dark">FIND A TRUCK</div>
+        <h2>Search trucks returning empty on your route</h2>
+        <p>Filter by where your goods need to go — these are the trucks already heading that way. Now covering every state and district across India, from three-wheelers to multi-axle trailers.</p>
+      </div>
+
+      <div class="filters">
+        <div class="field">
+          <label for="fFromState">From — State</label>
+          <select id="fFromState"></select>
+        </div>
+        <div class="field">
+          <label for="fFrom">From — District</label>
+          <select id="fFrom"></select>
+        </div>
+        <div class="field">
+          <label for="fToState">To — State</label>
+          <select id="fToState"></select>
+        </div>
+        <div class="field">
+          <label for="fTo">To — District</label>
+          <select id="fTo"></select>
+        </div>
+        <div class="field">
+          <label for="fVehicle">Vehicle type</label>
+          <select id="fVehicle"></select>
+        </div>
+        <button class="btn btn-teal btn-sm" style="align-self:center;height:42px;" onclick="renderTrucks()">Search</button>
+      </div>
+
+      <div class="listing-grid" id="truckResults"></div>
+    </section>
+  </div>
+
+  <!-- ================= SEND GOODS (POST LOAD) ================= -->
+  <div class="view" id="view-postload">
+    <section style="padding-top:40px;">
+      <div class="section-head">
+        <div class="eyebrow-dark">SEND GOODS</div>
+        <h2>Tell us what needs to move</h2>
+        <p>Nearby truck owners with matching empty trips will be notified.</p>
+      </div>
+      <div class="form-wrap">
+        <form class="panel" id="loadForm">
+          <h3>Load details</h3>
+          <div class="form-grid">
+            <div class="field"><label class="req" for="lFromState">Pickup state</label>
+              <select id="lFromState" required></select>
+            </div>
+            <div class="field"><label class="req" for="lFrom">Pickup district / town</label>
+              <select id="lFrom" required></select>
+            </div>
+            <div class="field"><label class="req" for="lToState">Drop state</label>
+              <select id="lToState" required></select>
+            </div>
+            <div class="field"><label class="req" for="lTo">Drop district / town</label>
+              <select id="lTo" required></select>
+            </div>
+            <div class="field"><label class="req" for="lGoods">Goods type</label>
+              <input id="lGoods" placeholder="e.g. Rice bags, furniture, cement" required></div>
+            <div class="field"><label class="req" for="lWeight">Approx. weight</label>
+              <input id="lWeight" placeholder="e.g. 2 tonnes / 500 kg" required></div>
+            <div class="field"><label for="lDate">Needed by</label>
+              <input id="lDate" type="date"></div>
+            <div class="field"><label for="lPhone">Your phone</label>
+              <input id="lPhone" type="tel" placeholder="10-digit mobile"></div>
+            <div class="field full"><label for="lNotes">Notes (optional)</label>
+              <textarea id="lNotes" rows="3" placeholder="Any handling instructions, urgency, etc."></textarea></div>
+          </div>
+          <button type="submit" class="btn btn-vermilion" style="margin-top:18px;">Post this load</button>
+          <div class="toast" id="loadToast">✅ Posted! Trucks on this route will be notified. Yours now appears at the top of the list below.</div>
+        </form>
+        <div class="helper-panel">
+          <h3>Why this works</h3>
+          <ul>
+            <li>You're not booking a full truck at full price — you're catching one that's already going your way.</li>
+            <li>Typical savings vs. a dedicated booking: 20–40%.</li>
+            <li>Your phone number stays private until you choose to share it.</li>
+            <li>No pressure — you choose which offer to accept.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top:44px;">
+        <div class="eyebrow-dark">CURRENTLY POSTED LOADS</div>
+        <h2>What people are sending right now</h2>
+      </div>
+      <div class="listing-grid" id="loadResults"></div>
+    </section>
+  </div>
+
+  <!-- ================= I HAVE A TRUCK (POST TRUCK) ================= -->
+  <div class="view" id="view-posttruck">
+    <section style="padding-top:40px;">
+      <div class="section-head">
+        <div class="eyebrow-dark">I HAVE A TRUCK</div>
+        <h2>Going back empty? Post your trip.</h2>
+        <p>Shippers on your route will see this and can book it before you leave.</p>
+      </div>
+      <div class="form-wrap">
+        <form class="panel" id="truckForm">
+          <h3>Trip details</h3>
+          <div class="form-grid">
+            <div class="field"><label class="req" for="tFromState">Starting state</label>
+              <select id="tFromState" required></select>
+            </div>
+            <div class="field"><label class="req" for="tFrom">Starting district / town</label>
+              <select id="tFrom" required></select>
+            </div>
+            <div class="field"><label class="req" for="tToState">Heading to — state</label>
+              <select id="tToState" required></select>
+            </div>
+            <div class="field"><label class="req" for="tTo">Heading to — district / town</label>
+              <select id="tTo" required></select>
+            </div>
+            <div class="field"><label class="req" for="tVehicle">Vehicle type</label>
+              <select id="tVehicle" required></select></div>
+            <div class="field" id="tVehicleOtherWrap" style="display:none;"><label for="tVehicleOther">Specify vehicle type</label>
+              <input id="tVehicleOther" placeholder="e.g. Tractor-trailer, Modified LCV"></div>
+            <div class="field"><label class="req" for="tCapacity">Capacity</label>
+              <input id="tCapacity" placeholder="e.g. 9 tonnes / 750 kg" required></div>
+            <div class="field"><label for="tTime">Available from</label>
+              <input id="tTime" type="datetime-local"></div>
+            <div class="field"><label for="tPrice">Expected price (₹)</label>
+              <input id="tPrice" placeholder="e.g. 3000-3800"></div>
+            <div class="field full"><label for="tOwner">Your name / broker name</label>
+              <input id="tOwner" placeholder="e.g. Krishna Logistics"></div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="margin-top:18px;">Post this truck</button>
+          <div class="toast" id="truckToast">✅ Posted! Shippers on this route will be notified. Yours now appears at the top of the list below.</div>
+        </form>
+        <div class="helper-panel">
+          <h3>For brokers &amp; fleet owners</h3>
+          <ul>
+            <li>Managing multiple trucks? You can post on behalf of drivers who aren't on the app.</li>
+            <li>Save your regular routes to post a new trip in seconds next time.</li>
+            <li>Every completed trip builds your rating — more visibility on future searches.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-head" style="margin-top:44px;">
+        <div class="eyebrow-dark">CURRENTLY POSTED TRUCKS</div>
+        <h2>Empty trucks on the corridor right now</h2>
+      </div>
+      <div class="listing-grid" id="truckResults2"></div>
+    </section>
+  </div>
+
+</main>
+
+<footer>
+  <div class="foot-inner">
+    <div>
+      <div class="display">TruckSetu</div>
+      <small>ధన్యవాదాలు · a corridor-first return-load marketplace for Andhra Pradesh</small>
+    </div>
+    <small>Prototype build — demo data shown throughout. Not a live booking service.</small>
+  </div>
+</footer>
+
+<script>
+  const STATE_DISTRICTS = {"Andhra Pradesh":["Alluri Sitharama Raju","Anakapalli","Anantapur","Annamayya","Bapatla","Chittoor","East Godavari","Eluru","Guntur","Kakinada","Konaseema","Krishna","Kurnool","Nandyal","NTR","Palnadu","Parvathipuram Manyam","Prakasam","Srikakulam","Sri Sathya Sai","Tirupati","Visakhapatnam","Vizianagaram","West Godavari","YSR Kadapa"],"Arunachal Pradesh":["Tawang","West Kameng","East Kameng","Papum Pare","Kurung Kumey","Kra Daadi","Lower Subansiri","Upper Subansiri","West Siang","East Siang","Siang","Upper Siang","Lower Siang","Lower Dibang Valley","Dibang Valley","Anjaw","Lohit","Namsai","Changlang","Tirap","Longding","Kamle","Shi Yomi","Pakke-Kessang","Leparada"],"Assam":["Baksa","Barpeta","Biswanath","Bongaigaon","Cachar","Charaideo","Chirang","Darrang","Dhemaji","Dhubri","Dibrugarh","Dima Hasao","Goalpara","Golaghat","Hailakandi","Hojai","Jorhat","Kamrup","Kamrup Metropolitan","Karbi Anglong","Karimganj","Kokrajhar","Lakhimpur","Majuli","Morigaon","Nagaon","Nalbari","Sivasagar","Sonitpur","South Salmara-Mankachar","Tinsukia","Udalguri","West Karbi Anglong"],"Bihar":["Araria","Arwal","Aurangabad","Banka","Begusarai","Bhagalpur","Bhojpur","Buxar","Darbhanga","East Champaran","Gaya","Gopalganj","Jamui","Jehanabad","Kaimur","Katihar","Khagaria","Kishanganj","Lakhisarai","Madhepura","Madhubani","Munger","Muzaffarpur","Nalanda","Nawada","Patna","Purnia","Rohtas","Saharsa","Samastipur","Saran","Sheikhpura","Sheohar","Sitamarhi","Siwan","Supaul","Vaishali","West Champaran"],"Chhattisgarh":["Balod","Baloda Bazar","Balrampur","Bastar","Bemetara","Bijapur","Bilaspur","Dantewada","Dhamtari","Durg","Gariaband","Gaurela-Pendra-Marwahi","Janjgir-Champa","Jashpur","Kabirdham","Kanker","Kondagaon","Korba","Koriya","Mahasamund","Mungeli","Narayanpur","Raigarh","Raipur","Rajnandgaon","Sukma","Surajpur","Surguja"],"Goa":["North Goa","South Goa"],"Gujarat":["Ahmedabad","Amreli","Anand","Aravalli","Banaskantha","Bharuch","Bhavnagar","Botad","Chhota Udaipur","Dahod","Dang","Devbhoomi Dwarka","Gandhinagar","Gir Somnath","Jamnagar","Junagadh","Kheda","Kutch","Mahisagar","Mehsana","Morbi","Narmada","Navsari","Panchmahal","Patan","Porbandar","Rajkot","Sabarkantha","Surat","Surendranagar","Tapi","Vadodara","Valsad"],"Haryana":["Ambala","Bhiwani","Charkhi Dadri","Faridabad","Fatehabad","Gurugram","Hisar","Jhajjar","Jind","Kaithal","Karnal","Kurukshetra","Mahendragarh","Nuh","Palwal","Panchkula","Panipat","Rewari","Rohtak","Sirsa","Sonipat","Yamunanagar"],"Himachal Pradesh":["Bilaspur","Chamba","Hamirpur","Kangra","Kinnaur","Kullu","Lahaul and Spiti","Mandi","Shimla","Sirmaur","Solan","Una"],"Jharkhand":["Bokaro","Chatra","Deoghar","Dhanbad","Dumka","East Singhbhum","Garhwa","Giridih","Godda","Gumla","Hazaribagh","Jamtara","Khunti","Koderma","Latehar","Lohardaga","Pakur","Palamu","Ramgarh","Ranchi","Sahebganj","Seraikela Kharsawan","Simdega","West Singhbhum"],"Karnataka":["Bagalkot","Ballari","Belagavi","Bengaluru Rural","Bengaluru Urban","Bidar","Chamarajanagar","Chikballapur","Chikkamagaluru","Chitradurga","Dakshina Kannada","Davanagere","Dharwad","Gadag","Hassan","Haveri","Kalaburagi","Kodagu","Kolar","Koppal","Mandya","Mysuru","Raichur","Ramanagara","Shivamogga","Tumakuru","Udupi","Uttara Kannada","Vijayapura","Vijayanagara","Yadgir"],"Kerala":["Alappuzha","Ernakulam","Idukki","Kannur","Kasaragod","Kollam","Kottayam","Kozhikode","Malappuram","Palakkad","Pathanamthitta","Thiruvananthapuram","Thrissur","Wayanad"],"Madhya Pradesh":["Agar Malwa","Alirajpur","Anuppur","Ashoknagar","Balaghat","Barwani","Betul","Bhind","Bhopal","Burhanpur","Chhatarpur","Chhindwara","Damoh","Datia","Dewas","Dhar","Dindori","Guna","Gwalior","Harda","Hoshangabad","Indore","Jabalpur","Jhabua","Katni","Khandwa","Khargone","Mandla","Mandsaur","Morena","Narsinghpur","Neemuch","Panna","Raisen","Rajgarh","Ratlam","Rewa","Sagar","Satna","Sehore","Seoni","Shahdol","Shajapur","Sheopur","Shivpuri","Sidhi","Singrauli","Tikamgarh","Ujjain","Umaria","Vidisha"],"Maharashtra":["Ahmednagar","Akola","Amravati","Chhatrapati Sambhajinagar","Beed","Bhandara","Buldhana","Chandrapur","Dhule","Gadchiroli","Gondia","Hingoli","Jalgaon","Jalna","Kolhapur","Latur","Mumbai City","Mumbai Suburban","Nagpur","Nanded","Nandurbar","Nashik","Osmanabad","Palghar","Parbhani","Pune","Raigad","Ratnagiri","Sangli","Satara","Sindhudurg","Solapur","Thane","Wardha","Washim","Yavatmal"],"Manipur":["Bishnupur","Chandel","Churachandpur","Imphal East","Imphal West","Jiribam","Kakching","Kamjong","Kangpokpi","Noney","Pherzawl","Senapati","Tamenglong","Tengnoupal","Thoubal","Ukhrul"],"Meghalaya":["East Garo Hills","East Jaintia Hills","East Khasi Hills","North Garo Hills","Ri Bhoi","South Garo Hills","South West Garo Hills","South West Khasi Hills","West Garo Hills","West Jaintia Hills","West Khasi Hills"],"Mizoram":["Aizawl","Champhai","Hnahthial","Khawzawl","Kolasib","Lawngtlai","Lunglei","Mamit","Saitual","Serchhip"],"Nagaland":["Chumukedima","Dimapur","Kiphire","Kohima","Longleng","Mokokchung","Mon","Niuland","Noklak","Peren","Phek","Shamator","Tseminyu","Tuensang","Wokha","Zunheboto"],"Odisha":["Angul","Balangir","Balasore","Bargarh","Bhadrak","Boudh","Cuttack","Deogarh","Dhenkanal","Gajapati","Ganjam","Jagatsinghpur","Jajpur","Jharsuguda","Kalahandi","Kandhamal","Kendrapara","Kendujhar","Khordha","Koraput","Malkangiri","Mayurbhanj","Nabarangpur","Nayagarh","Nuapada","Puri","Rayagada","Sambalpur","Subarnapur","Sundargarh"],"Punjab":["Amritsar","Barnala","Bathinda","Faridkot","Fatehgarh Sahib","Fazilka","Ferozepur","Gurdaspur","Hoshiarpur","Jalandhar","Kapurthala","Ludhiana","Malerkotla","Mansa","Moga","Muktsar","Pathankot","Patiala","Rupnagar","Sangrur","SAS Nagar (Mohali)","Shaheed Bhagat Singh Nagar","Tarn Taran"],"Rajasthan":["Ajmer","Alwar","Balotra","Banswara","Baran","Barmer","Beawar","Bharatpur","Bhilwara","Bikaner","Bundi","Chittorgarh","Churu","Dausa","Deeg","Dholpur","Dungarpur","Ganganagar","Hanumangarh","Jaipur","Jaisalmer","Jalore","Jhalawar","Jhunjhunu","Jodhpur","Karauli","Kekri","Khairthal-Tijara","Kota","Kotputli-Behror","Nagaur","Pali","Phalodi","Pratapgarh","Rajsamand","Sawai Madhopur","Sikar","Sirohi","Tonk","Udaipur"],"Sikkim":["East Sikkim","North Sikkim","Pakyong","Soreng","South Sikkim","West Sikkim"],"Tamil Nadu":["Ariyalur","Chengalpattu","Chennai","Coimbatore","Cuddalore","Dharmapuri","Dindigul","Erode","Kallakurichi","Kancheepuram","Kanyakumari","Karur","Krishnagiri","Madurai","Mayiladuthurai","Nagapattinam","Namakkal","Nilgiris","Perambalur","Pudukkottai","Ramanathapuram","Ranipet","Salem","Sivaganga","Tenkasi","Thanjavur","Theni","Thoothukudi","Tiruchirappalli","Tirunelveli","Tirupathur","Tiruppur","Tiruvallur","Tiruvannamalai","Tiruvarur","Vellore","Viluppuram","Virudhunagar"],"Telangana":["Adilabad","Bhadradri Kothagudem","Hanamkonda","Hyderabad","Jagtial","Jangaon","Jayashankar Bhupalpally","Jogulamba Gadwal","Kamareddy","Karimnagar","Khammam","Komaram Bheem","Mahabubabad","Mahabubnagar","Mancherial","Medak","Medchal-Malkajgiri","Mulugu","Nagarkurnool","Nalgonda","Narayanpet","Nirmal","Nizamabad","Peddapalli","Rajanna Sircilla","Ranga Reddy","Sangareddy","Siddipet","Suryapet","Vikarabad","Wanaparthy","Warangal","Yadadri Bhuvanagiri"],"Tripura":["Dhalai","Gomati","Khowai","North Tripura","Sepahijala","South Tripura","Unakoti","West Tripura"],"Uttar Pradesh":["Agra","Aligarh","Ambedkar Nagar","Amethi","Amroha","Auraiya","Ayodhya","Azamgarh","Baghpat","Bahraich","Ballia","Balrampur","Banda","Barabanki","Bareilly","Basti","Bhadohi","Bijnor","Budaun","Bulandshahr","Chandauli","Chitrakoot","Deoria","Etah","Etawah","Farrukhabad","Fatehpur","Firozabad","Gautam Buddha Nagar","Ghaziabad","Ghazipur","Gonda","Gorakhpur","Hamirpur","Hapur","Hardoi","Hathras","Jalaun","Jaunpur","Jhansi","Kannauj","Kanpur Dehat","Kanpur Nagar","Kasganj","Kaushambi","Kushinagar","Lakhimpur Kheri","Lalitpur","Lucknow","Maharajganj","Mahoba","Mainpuri","Mathura","Mau","Meerut","Mirzapur","Moradabad","Muzaffarnagar","Pilibhit","Pratapgarh","Prayagraj","Raebareli","Rampur","Saharanpur","Sambhal","Sant Kabir Nagar","Shahjahanpur","Shamli","Shravasti","Siddharthnagar","Sitapur","Sonbhadra","Sultanpur","Unnao","Varanasi"],"Uttarakhand":["Almora","Bageshwar","Chamoli","Champawat","Dehradun","Haridwar","Nainital","Pauri Garhwal","Pithoragarh","Rudraprayag","Tehri Garhwal","Udham Singh Nagar","Uttarkashi"],"West Bengal":["Alipurduar","Bankura","Birbhum","Cooch Behar","Dakshin Dinajpur","Darjeeling","Hooghly","Howrah","Jalpaiguri","Jhargram","Kalimpong","Kolkata","Malda","Murshidabad","Nadia","North 24 Parganas","Paschim Bardhaman","Paschim Medinipur","Purba Bardhaman","Purba Medinipur","Purulia","South 24 Parganas","Uttar Dinajpur"],"Andaman and Nicobar Islands":["Nicobar","North and Middle Andaman","South Andaman"],"Chandigarh":["Chandigarh"],"Dadra and Nagar Haveli and Daman and Diu":["Dadra and Nagar Haveli","Daman","Diu"],"Delhi":["Central Delhi","East Delhi","New Delhi","North Delhi","North East Delhi","North West Delhi","Shahdara","South Delhi","South East Delhi","South West Delhi","West Delhi"],"Jammu and Kashmir":["Anantnag","Bandipora","Baramulla","Budgam","Doda","Ganderbal","Jammu","Kathua","Kishtwar","Kulgam","Kupwara","Poonch","Pulwama","Rajouri","Ramban","Reasi","Samba","Shopian","Srinagar","Udhampur"],"Ladakh":["Kargil","Leh"],"Lakshadweep":["Lakshadweep"],"Puducherry":["Karaikal","Mahe","Puducherry","Yanam"]};
+
+  const STATES = Object.keys(STATE_DISTRICTS).sort();
+
+  const VEHICLE_TYPES = [
+    "Three-wheeler / Auto (Tempo)",
+    "Pickup (Tata Ace / Chhota Hathi)",
+    "Mini truck",
+    "6-wheeler",
+    "8-wheeler / open body",
+    "10-wheeler",
+    "12-wheeler / multi-axle",
+    "Container",
+    "Trailer / Low-bed",
+    "Tanker",
+    "Refrigerated / Reefer truck",
+    "Tipper",
+    "Other"
+  ];
+
+  let trucks = [
+    {from:"Anakapalli", to:"Visakhapatnam", vehicle:"Mini truck", capacity:"2.5 tonnes", when:"Today, 3:30 PM", price:"₹1,800–2,200", owner:"Ramesh (Owner-driver)", verified:true, phone:"98xxxxx421"},
+    {from:"Vijayawada", to:"Guntur", vehicle:"6-wheeler", capacity:"9 tonnes", when:"Tomorrow, 9:00 AM", price:"₹3,000–3,800", owner:"Suresh Transport Co.", verified:true, phone:"94xxxxx102"},
+    {from:"Visakhapatnam", to:"Anakapalli", vehicle:"10-wheeler", capacity:"16 tonnes", when:"Today, 6:00 PM", price:"₹4,200–4,800", owner:"Krishna Logistics", verified:true, phone:"90xxxxx877"},
+    {from:"Kakinada", to:"Rajahmundry", vehicle:"Mini truck", capacity:"3 tonnes", when:"Tomorrow, 11:00 AM", price:"₹1,900–2,200", owner:"Bhaskar (Owner-driver)", verified:false, phone:"97xxxxx340"},
+    {from:"Guntur", to:"Vijayawada", vehicle:"Container", capacity:"12 tonnes", when:"Today, 5:00 PM", price:"₹3,200–3,600", owner:"Lakshmi Transports", verified:true, phone:"91xxxxx665"},
+    {from:"Eluru", to:"Vijayawada", vehicle:"8-wheeler / open body", capacity:"14 tonnes", when:"Today, 4:00 PM", price:"₹3,800–4,200", owner:"Prasad Roadlines", verified:true, phone:"96xxxxx218"},
+    {from:"Anakapalli", to:"Visakhapatnam", vehicle:"Three-wheeler / Auto (Tempo)", capacity:"500 kg", when:"Today, 2:00 PM", price:"₹500–700", owner:"Venkat (Owner-driver)", verified:true, phone:"93xxxxx204"},
+    {from:"Bengaluru Urban", to:"Chennai", vehicle:"12-wheeler / multi-axle", capacity:"20 tonnes", when:"Tomorrow, 6:00 AM", price:"₹18,000–22,000", owner:"South Star Carriers", verified:true, phone:"98xxxxx713"},
+    {from:"Pune", to:"Mumbai City", vehicle:"Refrigerated / Reefer truck", capacity:"7 tonnes", when:"Today, 9:00 PM", price:"₹9,500–11,000", owner:"ColdChain Movers", verified:true, phone:"90xxxxx455"},
+    {from:"Gurugram", to:"Central Delhi", vehicle:"Pickup (Tata Ace / Chhota Hathi)", capacity:"750 kg", when:"Today, 5:30 PM", price:"₹1,200–1,600", owner:"Deepak (Owner-driver)", verified:false, phone:"99xxxxx087"},
+    {from:"Ahmedabad", to:"Surat", vehicle:"Trailer / Low-bed", capacity:"25 tonnes", when:"Tomorrow, 7:00 AM", price:"₹16,000–19,000", owner:"Gujarat Heavy Haulage", verified:true, phone:"97xxxxx601"},
+    {from:"Kolkata", to:"Howrah", vehicle:"Other — Tractor-trailer", capacity:"18 tonnes", when:"Today, 8:00 PM", price:"₹7,500–8,800", owner:"Bengal Freight Line", verified:false, phone:"91xxxxx339"},
+  ];
+
+  let loads = [
+    {from:"Anakapalli", to:"Visakhapatnam", goods:"Rice bags", weight:"2 tonnes", by:"Today evening", notes:"Loading dock available, 2 workers on site.", phone:"99xxxxx552"},
+    {from:"Guntur", to:"Vijayawada", goods:"Cement bags", weight:"5 tonnes", by:"Tomorrow morning", notes:"Needs covered/waterproof body.", phone:"90xxxxx119"},
+    {from:"Vijayawada", to:"Guntur", goods:"Household furniture", weight:"~800 kg", by:"Flexible, this week", notes:"House shifting, careful handling needed.", phone:"93xxxxx884"},
+    {from:"Visakhapatnam", to:"Anakapalli", goods:"Seafood crates (chilled)", weight:"1.2 tonnes", by:"Urgent — today", notes:"Time-sensitive, needs quick pickup.", phone:"92xxxxx031"},
+    {from:"Rajahmundry", to:"Kakinada", goods:"Steel rods", weight:"8 tonnes", by:"Tomorrow", notes:"Open body fine, crane loading available.", phone:"95xxxxx770"},
+    {from:"Mumbai Suburban", to:"Thane", goods:"Electronics cartons", weight:"1.5 tonnes", by:"Today, urgent", notes:"Dry van preferred, fragile items.", phone:"98xxxxx240"},
+    {from:"Jaipur", to:"Ajmer", goods:"Textile bales", weight:"6 tonnes", by:"Tomorrow evening", notes:"Loading dock available at pickup.", phone:"94xxxxx612"},
+    {from:"Ludhiana", to:"Amritsar", goods:"Auto parts (small crates)", weight:"400 kg", by:"Flexible, this week", notes:"Fine for a three-wheeler or pickup.", phone:"96xxxxx358"},
+  ];
+
+  // pairs of [state-select-id, district-select-id, isFilter]
+  const LOCATION_PAIRS = [
+    ['fFromState','fFrom', true],
+    ['fToState','fTo', true],
+    ['lFromState','lFrom', false],
+    ['lToState','lTo', false],
+    ['tFromState','tFrom', false],
+    ['tToState','tTo', false],
+  ];
+
+  function fillDistricts(stateSel, distSel, isFilter, keepValue){
+    const state = stateSel.value;
+    const prev = keepValue ? distSel.value : "";
+    const placeholder = isFilter ? '<option value="">Any district</option>' : '<option value="">Select district</option>';
+    if(!state){
+      distSel.innerHTML = placeholder;
+      distSel.disabled = true;
+      return;
+    }
+    distSel.disabled = false;
+    const districts = STATE_DISTRICTS[state] || [];
+    distSel.innerHTML = placeholder + districts.map(d=>`<option value="${d}">${d}</option>`).join('');
+    if(prev && districts.includes(prev)) distSel.value = prev;
+  }
+
+  function fillStateDistrictSelects(){
+    LOCATION_PAIRS.forEach(([stateId, distId, isFilter])=>{
+      const stateSel = document.getElementById(stateId);
+      const distSel = document.getElementById(distId);
+      const statePlaceholder = isFilter ? '<option value="">Any state</option>' : '<option value="">Select state</option>';
+      stateSel.innerHTML = statePlaceholder + STATES.map(s=>`<option value="${s}">${s}</option>`).join('');
+      fillDistricts(stateSel, distSel, isFilter, false);
+      stateSel.addEventListener('change', ()=> fillDistricts(stateSel, distSel, isFilter, false));
+    });
+    // sensible defaults so the prototype shows data immediately
+    setLocation('fFromState','fFrom','Andhra Pradesh','');
+    setLocation('fToState','fTo','','');
+    setLocation('lFromState','lFrom','Andhra Pradesh','Anakapalli');
+    setLocation('lToState','lTo','Andhra Pradesh','Visakhapatnam');
+    setLocation('tFromState','tFrom','Andhra Pradesh','Visakhapatnam');
+    setLocation('tToState','tTo','Andhra Pradesh','Anakapalli');
+  }
+
+  function setLocation(stateId, distId, stateVal, distVal){
+    const stateSel = document.getElementById(stateId);
+    const distSel = document.getElementById(distId);
+    if(stateVal){
+      stateSel.value = stateVal;
+      fillDistricts(stateSel, distSel, LOCATION_PAIRS.find(p=>p[0]===stateId)[2], false);
+      if(distVal) distSel.value = distVal;
+    }
+  }
+
+  function fillVehicleSelects(){
+    document.querySelectorAll('select#fVehicle, select#tVehicle').forEach(sel=>{
+      const isFilter = sel.id === 'fVehicle';
+      sel.innerHTML = (isFilter ? '<option value="">Any</option>' : '<option value="">Select</option>')
+        + VEHICLE_TYPES.map(v=>`<option>${v}</option>`).join('');
+    });
+    document.getElementById('tVehicle').addEventListener('change', function(){
+      document.getElementById('tVehicleOtherWrap').style.display = (this.value === 'Other') ? '' : 'none';
+    });
+  }
+
+  function truckCard(t, idx){
+    return `<div class="card art-border">
+      <div class="route"><span>${t.from}</span><span class="arrow">→</span><span>${t.to}</span></div>
+      <div class="meta">
+        <span class="tag">${t.vehicle}</span>
+        <span class="tag">${t.capacity}</span>
+        <span class="tag warn">${t.when}</span>
+      </div>
+      <div class="price mono">Est. fare: ${t.price}</div>
+      <div class="owner">${t.owner} ${t.verified ? '<span class="verified">✓ verified</span>' : ''}</div>
+      <div class="card-actions">
+        <button class="btn btn-sm btn-teal" onclick="revealContact(this)">Contact owner</button>
+        <button class="btn btn-sm btn-ghost" onclick="showView('postload')">Send goods this way</button>
+      </div>
+      <div class="contact-reveal mono">📞 ${t.phone} — in the real app this is a masked, in-app call.</div>
+    </div>`;
+  }
+
+  function loadCard(l){
+    return `<div class="card art-border">
+      <div class="route"><span>${l.from}</span><span class="arrow">→</span><span>${l.to}</span></div>
+      <div class="meta">
+        <span class="tag">${l.goods}</span>
+        <span class="tag">${l.weight}</span>
+        <span class="tag warn">${l.by}</span>
+      </div>
+      <div class="owner" style="margin-top:12px;">${l.notes}</div>
+      <div class="card-actions">
+        <button class="btn btn-sm btn-teal" onclick="revealContact(this)">Contact shipper</button>
+        <button class="btn btn-sm btn-ghost" onclick="showView('posttruck')">I can carry this</button>
+      </div>
+      <div class="contact-reveal mono">📞 ${l.phone} — in the real app this is a masked, in-app call.</div>
+    </div>`;
+  }
+
+  function revealContact(btn){
+    const card = btn.closest('.card');
+    card.querySelector('.contact-reveal').classList.toggle('show');
+  }
+
+  function renderTrucks(){
+    const from = document.getElementById('fFrom').value;
+    const to = document.getElementById('fTo').value;
+    const veh = document.getElementById('fVehicle').value;
+    const filtered = trucks.filter(t =>
+      (!from || t.from === from) && (!to || t.to === to) && (!veh || t.vehicle === veh)
+    );
+    document.getElementById('truckResults').innerHTML = filtered.length
+      ? filtered.map(truckCard).join('')
+      : `<p style="color:#4B564D;">No exact matches yet — try widening your search, or post your load and get notified when a truck matches.</p>`;
+  }
+
+  function renderHomeFeed(){
+    const mix = [...trucks.slice(0,3), ...loads.slice(0,2)];
+    document.getElementById('homeFeed').innerHTML = trucks.slice(0,4).map(truckCard).join('');
+  }
+
+  function renderLoadResults(){
+    document.getElementById('loadResults').innerHTML = loads.map(loadCard).join('');
+  }
+  function renderTruckResults2(){
+    document.getElementById('truckResults2').innerHTML = trucks.map(truckCard).join('');
+  }
+
+  function showView(name){
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-'+name).classList.add('active');
+    document.querySelectorAll('#mainNav button').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+  document.querySelectorAll('#mainNav button').forEach(b=>{
+    b.addEventListener('click', ()=>showView(b.dataset.view));
+  });
+
+  document.getElementById('loadForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const newLoad = {
+      from: document.getElementById('lFrom').value || "Anakapalli",
+      to: document.getElementById('lTo').value || "Visakhapatnam",
+      goods: document.getElementById('lGoods').value,
+      weight: document.getElementById('lWeight').value,
+      by: document.getElementById('lDate').value ? ('By ' + document.getElementById('lDate').value) : "Flexible",
+      notes: document.getElementById('lNotes').value || "No additional notes.",
+      phone: document.getElementById('lPhone').value ? document.getElementById('lPhone').value.replace(/(\d{2})\d+(\d{3})/, '$1xxxxx$2') : "9Xxxxxxxxx"
+    };
+    loads.unshift(newLoad);
+    renderLoadResults();
+    const toast = document.getElementById('loadToast');
+    toast.classList.add('show');
+    this.reset();
+    setTimeout(()=>toast.classList.remove('show'), 4500);
+  });
+
+  document.getElementById('truckForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const newTruck = {
+      from: document.getElementById('tFrom').value || "Visakhapatnam",
+      to: document.getElementById('tTo').value || "Anakapalli",
+      vehicle: (document.getElementById('tVehicle').value === 'Other' && document.getElementById('tVehicleOther').value)
+        ? document.getElementById('tVehicleOther').value
+        : document.getElementById('tVehicle').value,
+      capacity: document.getElementById('tCapacity').value,
+      when: document.getElementById('tTime').value ? new Date(document.getElementById('tTime').value).toLocaleString() : "Available now",
+      price: document.getElementById('tPrice').value ? ('₹' + document.getElementById('tPrice').value) : "Ask for quote",
+      owner: document.getElementById('tOwner').value || "New listing",
+      verified:false,
+      phone:"9Xxxxxxxxx"
+    };
+    trucks.unshift(newTruck);
+    renderTruckResults2();
+    renderTrucks();
+    const toast = document.getElementById('truckToast');
+    toast.classList.add('show');
+    this.reset();
+    setTimeout(()=>toast.classList.remove('show'), 4500);
+  });
+
+  fillStateDistrictSelects();
+  fillVehicleSelects();
+  renderHomeFeed();
+  renderTrucks();
+  renderLoadResults();
+  renderTruckResults2();
+</script>
+
+</body>
+</html>
